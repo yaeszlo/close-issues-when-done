@@ -1,0 +1,15 @@
+{
+  "name": "close-issues-when-done",
+  "version": "1.0.0",
+  "description": "GitHub Action fixing unfathomable lack of most basic GitHub functionality. When Project Card is moved to Done column - Issue is closed!",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "yaeszlo",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.8.2",
+    "@actions/github": "^5.0.3"
+  }
+}

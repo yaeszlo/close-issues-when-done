@@ -1,0 +1,19 @@
+name: "close-issues-when-done"
+
+description: "GitHub Action fixing unfathomable lack of most basic GitHub functionality. When Project Card is moved to Done column - Issue is closed!"
+inputs:
+  token:
+    description: "GitHub Token. By default uses context token."
+    default: ${{ github.token }}
+    required: false
+  project_id:
+    description: "Project Board ID"
+    required: true
+  board_done_column_name:
+    description: "Defaults to `Done`. Issues in this column will be closed."
+    required: false
+    default: Done
+
+runs:
+  using: "node16"
+  main: "main.js"

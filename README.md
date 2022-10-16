@@ -1,0 +1,1 @@
+GitHub Action fixing unfathomable lack of most basic GitHub functionality. When Project Card is moved to Done column - Issue is closed!
