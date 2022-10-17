@@ -11,49 +11,100 @@ const octokit = getOctokit(token);
 
 async function run() {
   try {
-    const projects = await octokit.request("GET /repos/{owner}/{repo}/projects", {
-      owner, repo
-    });
+    const project = await findProjectByName(boardName);
 
-    console.log('projects');
-    console.log(projects);
+    if (!project) {
+      console.log(`Project with name ${boardName} was not found in repository ${repo}`);
+      return;
+    }
 
-    const project = projects.data.find(project => project.name = boardName)
+    const column = await findDoneColumn(columnName);
 
-    console.log('project');
-    console.log(project);
+    if (!column) {
+      console.log(`Done column with name ${columnName} was not found in project ${project.name}`);
+      return;
+    }
 
-    const allColumns = await octokit.request("GET /projects/{project_id}/columns", {
-      project_id: project.id
-    });
+    const cards = await getLast100Cards(column.id);
 
-    console.log(allColumns);
+    if (!cards.length) {
+      console.log(`No Cards in ${columnName}`);
+      return;
+    }
 
-    const columnId = allColumns.data.find(column => column.name === columnName).id;
+    const potentialIssueIdsToClose = filterAndMapCardsToIssueIds(cards);
 
-    console.log(`Done column ID=${columnId}`);
+    if (!potentialIssueIdsToClose.length) {
+      console.log(`No issues found within last 100 cards from ${columnName}`);
+      return;
+    }
 
-    const cards = await octokit.request("GET /projects/columns/{column_id}/cards", {
-      column_id: columnId,
-      per_page: 100
-    });
+    const result = await checkIssuesAndClose(potentialIssueIdsToClose);
 
-    console.log(cards);
+    if (result.some(closed => closed === true)) {
+      console.log("Motherfuckers were closed.");
+    } else {
+      console.log("Nothing to close!");
+    }
 
-    console.log("=======================================");
-    console.log("CONTENT URL");
-    console.log("=======================================");
-    mapToIssues(cards);
   } catch (e) {
     console.log(e);
     process.exit(1);
   }
 }
 
-async function mapToIssues(cards) {
-  return cards.map(async card => {
-    console.log(`card.content_url`);
+async function getLast100Cards(columnId) {
+  return octokit.request("GET /projects/columns/{column_id}/cards", {
+    column_id: columnId,
+    per_page: 100
+  })?.data;
+}
+
+async function findDoneColumn(columnName) {
+  const allColumns = await octokit.request("GET /projects/{project_id}/columns", {
+    project_id: project.id
+  })?.data;
+
+  return allColumns.find(column => column.name === columnName);
+}
+
+async function findProjectByName(projectName) {
+  const projects = await octokit.request("GET /repos/{owner}/{repo}/projects", {
+    owner, repo
+  })?.data;
+
+  return projects.find(project => project.name = projectName);
+}
+
+function filterAndMapCardsToIssueIds(cards) {
+  return cards.map(card => {
+    if (card.content_url && /issues\/\d/.test(card.content_url)) {
+      return card.content_url.split("/").pop();
+    }
   });
+}
+
+async function checkIssuesAndClose(issueIds) {
+  const promises = issueIds.map(async id => {
+    const issue = await octokit.request("GET /repos/{owner}/{repo}/issues/{issue_number}", {
+      owner, repo, issue_number: id
+    });
+
+    if (issue.state === "open") {
+      await octokit.request("PATCH /repos/{owner}/{repo}/issues/{issue_number}", {
+        owner,
+        repo,
+        issue_number: id,
+        state: "closed",
+        state_reason: "completed"
+      });
+      return true;
+    } else {
+      return false;
+    }
+  });
+
+  return Promise.all(promises);
 }
 
 run();
