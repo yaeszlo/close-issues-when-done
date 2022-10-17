@@ -14,6 +14,9 @@ async function run() {
       owner, repo
     });
 
+    console.log('project');
+    console.log(project);
+
     const allColumns = await octokit.request("GET /projects/{project_id}/columns", {
       project_id: project.id
     });
