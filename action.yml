@@ -6,13 +6,14 @@ inputs:
     description: "GitHub Token. By default uses context token."
     default: ${{ github.token }}
     required: false
-  project_id:
-    description: "Project Board ID"
-    required: true
   board_done_column_name:
     description: "Defaults to `Done`. Issues in this column will be closed."
     required: false
     default: Done
+  repository:
+    description: "Target release repository. By default uses current repository. Format {owner}/{repositoryName}"
+    default: ${{ github.repository }}
+    required: false
 
 runs:
   using: "node16"
