@@ -54,24 +54,24 @@ async function run() {
 }
 
 async function getLast100Cards(columnId) {
-  return octokit.request("GET /projects/columns/{column_id}/cards", {
+  return (await octokit.request("GET /projects/columns/{column_id}/cards", {
     column_id: columnId,
     per_page: 100
-  })?.data;
+  }))?.data;
 }
 
 async function findDoneColumn(columnName) {
-  const allColumns = await octokit.request("GET /projects/{project_id}/columns", {
+  const allColumns = (await octokit.request("GET /projects/{project_id}/columns", {
     project_id: project.id
-  })?.data;
+  }))?.data;
 
   return allColumns.find(column => column.name === columnName);
 }
 
 async function findProjectByName(projectName) {
-  const projects = await octokit.request("GET /repos/{owner}/{repo}/projects", {
+  const projects = (await octokit.request("GET /repos/{owner}/{repo}/projects", {
     owner, repo
-  })?.data;
+  }))?.data;
 
   return projects.find(project => project.name = projectName);
 }
@@ -90,7 +90,7 @@ async function checkIssuesAndClose(issueIds) {
       owner, repo, issue_number: id
     });
 
-    if (issue.state === "open") {
+    if (issue.data.state === "open") {
       await octokit.request("PATCH /repos/{owner}/{repo}/issues/{issue_number}", {
         owner,
         repo,
