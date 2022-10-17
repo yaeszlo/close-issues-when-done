@@ -85,6 +85,9 @@ function filterAndMapCardsToIssueIds(cards) {
 }
 
 async function checkIssuesAndClose(issueIds) {
+
+  console.log(issueIds);
+
   const promises = issueIds.map(async id => {
     const issue = await octokit.request("GET /repos/{owner}/{repo}/issues/{issue_number}", {
       owner, repo, issue_number: id
