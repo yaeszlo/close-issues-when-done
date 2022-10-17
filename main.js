@@ -18,7 +18,7 @@ async function run() {
       return;
     }
 
-    const column = await findDoneColumn(columnName);
+    const column = await findDoneColumn(project.id, columnName);
 
     if (!column) {
       console.log(`Done column with name ${columnName} was not found in project ${project.name}`);
@@ -60,9 +60,9 @@ async function getLast100Cards(columnId) {
   }))?.data;
 }
 
-async function findDoneColumn(columnName) {
+async function findDoneColumn(projectId, columnName) {
   const allColumns = (await octokit.request("GET /projects/{project_id}/columns", {
-    project_id: project.id
+    project_id: projectId
   }))?.data;
 
   return allColumns.find(column => column.name === columnName);
