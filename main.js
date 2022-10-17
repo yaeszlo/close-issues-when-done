@@ -18,7 +18,7 @@ async function run() {
     console.log('projects');
     console.log(projects);
 
-    const project = projects.find(project => project.name = boardName)
+    const project = projects.data.find(project => project.name = boardName)
 
     console.log('project');
     console.log(project);
@@ -29,7 +29,7 @@ async function run() {
 
     console.log(allColumns);
 
-    const columnId = allColumns.find(column => column.name === columnName).id;
+    const columnId = allColumns.data.find(column => column.name === columnName).id;
 
     console.log(`Done column ID=${columnId}`);
 
