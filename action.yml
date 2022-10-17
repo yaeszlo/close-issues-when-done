@@ -6,6 +6,9 @@ inputs:
     description: "GitHub Token. By default uses context token."
     default: ${{ github.token }}
     required: false
+  board_name:
+    description: "Project Board name"
+    required: true
   board_done_column_name:
     description: "Defaults to `Done`. Issues in this column will be closed."
     required: false

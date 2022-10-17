@@ -2,6 +2,7 @@ const { getOctokit } = require("@actions/github");
 const core = require("@actions/core");
 
 const token = core.getInput("token");
+const boardName = core.getInput("board_name");
 const columnName = core.getInput("board_done_column_name");
 const repository = core.getInput("repository");
 
@@ -10,9 +11,11 @@ const octokit = getOctokit(token);
 
 async function run() {
   try {
-    const project = await octokit.request("GET /repos/{owner}/{repo}/projects", {
+    const projects = await octokit.request("GET /repos/{owner}/{repo}/projects", {
       owner, repo
     });
+
+    const project = projects.find(project => project.name = boardName)
 
     console.log('project');
     console.log(project);
