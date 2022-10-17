@@ -15,6 +15,9 @@ async function run() {
       owner, repo
     });
 
+    console.log('projects');
+    console.log(projects);
+
     const project = projects.find(project => project.name = boardName)
 
     console.log('project');
